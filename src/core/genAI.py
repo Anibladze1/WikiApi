@@ -27,7 +27,7 @@ class GenAIClient:
         try:
             self.logger.info("Starting text analysis.")
             text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=16000,
+                chunk_size=12000,
                 chunk_overlap=400,
             )
             texts = text_splitter.split_text(text)

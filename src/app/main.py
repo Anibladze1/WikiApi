@@ -6,7 +6,7 @@ from src.core.celery_config import insert_in_database
 from src.core.constants import MONGO_URI, DATABASE_NAME, COLLECTION_NAME
 from src.logger import get_logger
 
-from schemas import SummarizeTopicResponse, ErrorResponse, ReadSummaryResponse
+from src.app.schemas import SummarizeTopicResponse, ErrorResponse, ReadSummaryResponse
 
 
 app = FastAPI()
@@ -64,19 +64,19 @@ async def read_summary(topic_title_or_id: str):
     :return: The summary of the topic if found, otherwise an error message.
     """
     try:
-        # Search for the document using either the title or the ID
         query = {"$or": [{'_id': topic_title_or_id}, {'topic_title': topic_title_or_id.title()}]}
         existing_document = mongo_db.find_document(COLLECTION_NAME, query)
 
         if existing_document:
-            return existing_document['summary']
+            return {"summary": existing_document['summary']}
         else:
             message = f"Summary with provided ID/Title '{topic_title_or_id}' doesn't exist."
             logger.error(message)
-            return {"error": message}
+            raise HTTPException(status_code=404, detail=message)
     except Exception as e:
         logger.error(f"Error reading summary for '{topic_title_or_id}': {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 if __name__ == "__main__":

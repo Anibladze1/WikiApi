@@ -11,7 +11,7 @@ class ErrorResponse(BaseModel):
 
 
 class SummaryData(BaseModel):
-    _id: str = Field(..., example="123456")
+    _id: str
     topic_title: str = Field(..., example="Python Programming")
     summary: str = Field(..., example="Python is an interpreted, high-level and general-purpose programming language.")
 
