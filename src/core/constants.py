@@ -3,10 +3,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = ""
-MODEL_NAME = "gpt-3.5-turbo-0125"
-TOKEN_LIMIT = 4096
-VERBOSE = False
-DATABASE_NAME = 'mongo_db'
-COLLECTION_NAME = 'wikipedia_summaries'
-MONGO_URI = 'mongodb://mongo:27017/'
+API_KEY = os.getenv("OPENAI_API_KEY")
+MODEL_NAME = os.getenv("MODEL_NAME")
+VERBOSE = os.getenv("VERBOSE")
+DATABASE_NAME = os.getenv("DATABASE_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
+MONGO_URI = os.getenv("MONGO_URI")
