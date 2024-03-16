@@ -78,7 +78,6 @@ async def read_summary(topic_title_or_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
 if __name__ == "__main__":
     import uvicorn
 
