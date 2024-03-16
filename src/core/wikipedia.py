@@ -34,7 +34,7 @@ class WikipediaClient:
         page_id = data["query"]["search"][0]["pageid"]
         return page_id
 
-    async def retrieve_topic_data(self, topic_title: str) -> str:
+    async def retrieve_topic_data(self, topic_title: str) -> dict:
         """
         Method to Retrieve detailed topic data using the Topic title from Wikipedia
         :param topic_title: Title of the topic
@@ -50,4 +50,8 @@ class WikipediaClient:
         }
         data = await self._make_request(parameters=topic_data_retrieve_params)
         topic_details = data["query"]["pages"][str(page_id)]
-        return topic_details['extract']
+        data = {
+            'text': topic_details['extract'],
+            'page_id': page_id
+        }
+        return data
