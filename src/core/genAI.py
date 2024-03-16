@@ -1,38 +1,52 @@
 import os
-import textwrap
+import time
 
-from dotenv import load_dotenv
+from src.core.constants import API_KEY, MODEL_NAME, TOKEN_LIMIT, VERBOSE
 
-from langchain_openai import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain.text_splitter import CharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
+from langchain.docstore.document import Document
+from langchain.prompts import PromptTemplate
 
 import tiktoken
 
 
-load_dotenv()
+class GenAIClient:
+    def __init__(self):
+        self.model_name = MODEL_NAME
+        self.token_limit = TOKEN_LIMIT
+        self.verbose = VERBOSE
+        self.openai_key = API_KEY
+        self.llm = ChatOpenAI(openai_api_key=self.openai_key, model_name=self.model_name)
 
-model_name = "text-davinci-003"
-token_limit = 4096
-verbose = True
-openai_key = os.getenv("OPEN_AI_KEY")
+    @staticmethod
+    def num_tokens_from_string(string: str, encoding_name: str) -> int:
+        encoding = tiktoken.encoding_for_model(encoding_name)
+        num_tokens = len(encoding.encode(string))
+        return num_tokens
 
-llm = OpenAI(openai_key=openai_key, model_name=model_name)
+    def analyze_text(self, text: str) -> str:
+        text_splitter = CharacterTextSplitter.from_tiktoken_encoder(model_name=self.model_name)
+        texts = text_splitter.split_text(text)
+        docs = [Document(page_content=t) for t in texts]
 
+        prompt_template = """
+        Write a concise summary of the following:
+        {text}
+        CONSCISE SUMMARY IN ENGLISH:
+        """
 
-def num_tokens_from_string(string: str, encoding_name: str) -> int:
-    encoding = tiktoken.encoding_for_model(encoding_name)
-    num_tokens = len(encoding.encode(string))
-    return num_tokens
+        prompt = PromptTemplate(template=prompt_template, input_variables=["text"])
 
+        num_tokens = self.num_tokens_from_string(text, self.model_name)
 
-num_tokens = num_tokens_from_string("news_article", model_name)
+        if num_tokens < self.token_limit:
+            chain = load_summarize_chain(self.llm, chain_type="stuff", prompt=prompt, verbose=self.verbose)
+        else:
+            chain = load_summarize_chain(self.llm, chain_type="map_reduce", map_prompt=prompt, combine_prompt=prompt,
+                                         verbose=self.verbose)
 
-if num_tokens < token_limit:
-  chain = load_summarize_chain(llm, chain_type="stuff", verbose=verbose)
-else:
-  chain = load_summarize_chain(llm, chain_type="map_reduce", map_prompt=prompt, combine_prompt=prompt, verbose=verbose)
+        summary = chain.run(docs)
 
-summary = chain.run()
-
-print(f"Chain type: {chain.__class__.__name__}")
-print(f"Summary: {textwrap.fill(summary, width=100)}")
+        return summary
