@@ -16,17 +16,17 @@ class WikipediaClient:
             response.raise_for_status()  # Raises an exception for 4XX/5XX errors
             return response.json()
 
-    async def search_topic(self, title: str) -> int:
+    async def search_topic(self, topic_title: str) -> int:
         """
         Method to Search for a topic and return the page ID.
-        :param title: Title of the topic
+        :param topic_title: Title of the topic
         :return: Page ID of the topic
         """
         search_params = {
             "action": "query",
             "format": "json",
             "list": "search",
-            "srsearch": title,
+            "srsearch": topic_title,
         }
         data = await self._make_request(parameters=search_params)
         page_id = data["query"]["search"][0]["pageid"]
@@ -38,7 +38,7 @@ class WikipediaClient:
         :param topic_title: Title of the topic
         :return: Extracted text from the topic
         """
-        page_id = await self.search_topic(title=topic_title)
+        page_id = await self.search_topic(topic_title=topic_title)
         topic_data_retrieve_params = {
             "action": "query",
             "format": "json",

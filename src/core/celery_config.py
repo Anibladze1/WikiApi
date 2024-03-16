@@ -15,40 +15,40 @@ generative_client = GenAIClient()
 logger = get_logger(__name__)
 
 
-def generate_summary(topic, wiki_data):
+def generate_summary(topic_title, wiki_data):
     """
     Generates a summary for the given topic based on Wikipedia data.
 
-    :param topic: The topic to summarize.
+    :param topic_title: The topic to summarize.
     :param wiki_data: The data retrieved from Wikipedia, including the text to summarize.
     :return: A dictionary containing the topic, summary, and page ID.
     """
-    logger.info(f"Generating summary for topic: {topic}")
+    logger.info(f"Generating summary for topic: {topic_title}")
 
     wiki_page_id = str(wiki_data['page_id'])
     summary = generative_client.analyze_text(wiki_data['text'])
-    topic_title = topic.title()
+    topic_title = topic_title.title()
 
     return {
         "_id": wiki_page_id,
-        "topic": topic_title,
+        "topic_title": topic_title,
         "summary": summary
     }
 
 
 @celery_app.task
-def insert_in_database(topic, wiki_data):
+def insert_in_database(topic_title, wiki_data):
     """
     Analyzes and summarizes the text for a given topic, then attempts to save it to the database.
     If a document with the same ID already exists, it catches the DuplicateKeyError and skips insertion.
 
-    :param topic: The topic to summarize.
+    :param topic_title: The topic to summarize.
     :param wiki_data: The data retrieved from Wikipedia, including the text to summarize.
     :return: A message indicating the outcome of the operation.
     """
-    document = generate_summary(topic, wiki_data)
+    document = generate_summary(topic_title, wiki_data)
     wiki_page_id = document["_id"]
-    topic_title = document["topic"]
+    topic_title = document["topic_title"]
 
     try:
         inserted_id = mongo_db.insert_document(COLLECTION_NAME, document)
