@@ -1,5 +1,6 @@
-import httpx
 import asyncio
+
+import httpx
 
 
 class WikipediaClient:
@@ -30,15 +31,16 @@ class WikipediaClient:
             "srsearch": title,
         }
         data = await self._make_request(parameters=search_params)
-        pageid = data["query"]["search"][0]["pageid"]
-        return pageid
+        page_id = data["query"]["search"][0]["pageid"]
+        return page_id
 
-    async def retrieve_topic_data(self, page_id: int) -> str:
+    async def retrieve_topic_data(self, topic_title: str) -> dict:
         """
-        Method to Retrieve detailed topic data using the Wikipedia page ID.
-        :param page_id: Wikipedia page ID
-        :return: Extracted text of the topic
+        Method to Retrieve detailed topic data using the Topic title from Wikipedia
+        :param topic_title: Title of the topic
+        :return: Extracted text from the topic
         """
+        page_id = await self.search_topic(title=topic_title)
         topic_data_retrieve_params = {
             "action": "query",
             "format": "json",
@@ -48,4 +50,8 @@ class WikipediaClient:
         }
         data = await self._make_request(parameters=topic_data_retrieve_params)
         topic_details = data["query"]["pages"][str(page_id)]
-        return topic_details['extract']
+        data = {
+            'text': topic_details['extract'],
+            'page_id': page_id
+        }
+        return data

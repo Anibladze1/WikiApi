@@ -1,16 +1,10 @@
-FROM python:3.10
+FROM python:3.8
 
-# Set the working directory inside the Docker image
-WORKDIR /wikipedia
+WORKDIR /app
 
-# Copy your entire project into the Docker image
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
 
-# Install the project dependencies
-RUN pip install -r requirements.txt --no-cache
-
-# Adjust the working directory to where your Python module's main entry point is located
-WORKDIR /wikipedia/src
-
-# Specify the command to run your application
-CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "src.app.main:app", "--host", "0.0.0.0", "--reload"]
