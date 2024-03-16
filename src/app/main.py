@@ -7,7 +7,7 @@ from src.core.constants import MONGO_URI, DATABASE_NAME, COLLECTION_NAME
 from src.logger import get_logger
 
 from src.app.schemas import SummarizeTopicResponse, ErrorResponse, ReadSummaryResponse
-
+from src import __version__
 
 app = FastAPI()
 wikipedia_client = WikipediaClient()
@@ -16,9 +16,25 @@ mongo_db = MongoDB(uri=MONGO_URI, db_name=DATABASE_NAME)
 logger = get_logger(__name__)
 
 
-@app.get("/")
+@app.get(path="/", response_model=dict)
 async def root():
-    return {"message": "Hello World"}
+    """
+    Returns the API's root message with usage instructions, version information,
+    and a reference to the Swagger UI documentation.
+
+    :return: A dictionary with a welcome message, usage instructions, version information,
+    and a link to the Swagger UI documentation.
+    """
+    return {
+        "message": "Welcome to the Summarization API",
+        "version": __version__,
+        "instructions": {
+            "summarize_topic": "POST /summarize_topic - Summarize the content of a given Wikipedia topic title.",
+            "read_summary": "GET /read_summary/{topic_title_or_id} - Retrieve the summary of a topic "
+                            "using its title or ID.",
+            "docs": "Visit /docs for the Swagger UI to interact with the API and get more detailed information."
+        }
+    }
 
 
 @app.post(
