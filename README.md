@@ -38,7 +38,7 @@ The Wikipedia Topic Insight Generator is a Python application designed to fetch 
    ```bash
    cd Wikipedia-Topic-Insight-Generator
 3. **Set up the environment variables:**
-Copy the `.env.example` file to a new file named `.env` and fill in the necessary details like database URI, API keys, etc.
+Copy the `.env.example` file to a new file named `.env` and fill in the necessary details like database URI, API keys, etc. Note: For testing purposes, DB doesn't require auth. 
 
 
 4. **Build and run the application using Docker Compose:**
