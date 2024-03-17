@@ -3,7 +3,7 @@ from pymongo.errors import DuplicateKeyError
 
 from src.core.genAI import GenAIClient
 from src.core.mongo_db import MongoDB
-from src.core.constants import MONGO_URI, DATABASE_NAME, COLLECTION_NAME
+from src.settings import MONGO_URI, DATABASE_NAME, COLLECTION_NAME
 from src.logger import get_logger
 
 celery_app = Celery('tasks',

@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from src.core.mongo_db import MongoDB
 from src.core.wikipedia import WikipediaClient
 from src.core.celery_config import insert_in_database
-from src.core.constants import MONGO_URI, DATABASE_NAME, COLLECTION_NAME
+from src.settings import MONGO_URI, DATABASE_NAME, COLLECTION_NAME
 from src.logger import get_logger
 
 from src.app.schemas import SummarizeTopicResponse, ErrorResponse, ReadSummaryResponse

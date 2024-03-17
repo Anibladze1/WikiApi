@@ -1,6 +1,6 @@
 import logging
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from src.core.constants import API_KEY, MODEL_NAME, VERBOSE
+from src.settings import API_KEY, MODEL_NAME, VERBOSE
 from langchain_openai import OpenAI
 from langchain.chains.summarize import load_summarize_chain
 from langchain.docstore.document import Document
